@@ -1,4 +1,4 @@
-package com.yu;
+package com.yu.session;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -39,6 +39,12 @@ public class SessionServer implements Callable<Channel> {
 	 */
 	private Channel channel;
 
+	private Configuration configuration;
+
+	public SessionServer(Configuration configuration) {
+		this.configuration = configuration;
+	}
+
 	/**
 	 * 用于启动Socket服务器
 	 *
@@ -57,7 +63,7 @@ public class SessionServer implements Callable<Channel> {
 					//设置Socket的参数，其中 SO_BACKLOG 表示请求连接的最大队列长度
 					.option(ChannelOption.SO_BACKLOG, 128)
 					//指定 SessionChannelInitializer 用于处理新连接数据
-					.childHandler(new SessionChannelInitializer());
+					.childHandler(new SessionChannelInitializer(configuration));
 
 			channelFuture = serverBootstrap.bind(new InetSocketAddress(7397)).syncUninterruptibly();
 		} catch (Exception e) {

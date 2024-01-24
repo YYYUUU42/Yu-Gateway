@@ -1,4 +1,4 @@
-package com.yu;
+package com.yu.session;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;

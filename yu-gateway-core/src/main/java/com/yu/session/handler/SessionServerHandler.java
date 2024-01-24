@@ -1,8 +1,9 @@
-package com.yu.handler;
+package com.yu.session.handler;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.yu.BaseHandler;
+import com.yu.session.BaseHandler;
+import com.yu.session.Configuration;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
@@ -18,6 +19,12 @@ public class SessionServerHandler extends BaseHandler<FullHttpRequest> {
 
 	private final Logger logger = LoggerFactory.getLogger(SessionServerHandler.class);
 
+	private final Configuration configuration;
+
+	public SessionServerHandler(Configuration configuration) {
+		this.configuration = configuration;
+	}
+
 	/**
 	 * 用于处理会话
 	 *
@@ -28,6 +35,12 @@ public class SessionServerHandler extends BaseHandler<FullHttpRequest> {
 	@Override
 	protected void session(ChannelHandlerContext ctx, Channel channel, FullHttpRequest request) {
 		logger.info("网关接收请求 uri：{} method：{}", request.uri(), request.method());
+
+		// 返回信息控制：简单处理
+		String methodName = request.uri().substring(1);
+		if (methodName.equals("favicon.ico")) {
+			return;
+		}
 
 		//表示一个完整的HTTP响应,返回信息处理
 		DefaultFullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
