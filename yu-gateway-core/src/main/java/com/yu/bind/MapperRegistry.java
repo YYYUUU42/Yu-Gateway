@@ -7,6 +7,11 @@ import com.yu.session.GatewaySession;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author yu
+ * @description 泛化调用注册器
+ * @date 2024-01-25
+ */
 public class MapperRegistry {
 
     private final Configuration configuration;
@@ -15,7 +20,9 @@ public class MapperRegistry {
         this.configuration = configuration;
     }
 
-    // 泛化调用静态代理工厂
+    /**
+     * 泛化调用静态代理工厂
+     */
     private final Map<String, MapperProxyFactory> knownMappers = new HashMap<>();
 
     public IGenericReference getMapper(String uri, GatewaySession gatewaySession) {

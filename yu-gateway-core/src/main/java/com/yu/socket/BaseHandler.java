@@ -4,6 +4,11 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
+/**
+ * @author yu
+ * @description 数据处理器基累
+ * @date 2024-01-25
+ */
 public abstract class BaseHandler<T> extends SimpleChannelInboundHandler<T> {
 
 	/**

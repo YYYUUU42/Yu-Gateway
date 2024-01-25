@@ -6,6 +6,11 @@ import net.sf.cglib.proxy.MethodProxy;
 
 import java.lang.reflect.Method;
 
+/**
+ * @author yu
+ * @description 映射代理调用
+ * @date 2024-01-25
+ */
 public class MapperProxy implements MethodInterceptor {
 
     private GatewaySession gatewaySession;

@@ -6,6 +6,11 @@ import com.yu.session.GatewaySession;
 
 import java.lang.reflect.Method;
 
+/**
+ * @author yu
+ * @description 绑定调用方法
+ * @date 2024-01-25
+ */
 public class MapperMethod {
 
     private String uri;
