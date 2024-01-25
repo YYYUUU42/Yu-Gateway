@@ -1,6 +1,7 @@
-package com.yu.session;
+package com.yu.socket;
 
-import com.yu.session.handler.SessionServerHandler;
+import com.yu.session.defaults.DefaultGatewaySessionFactory;
+import com.yu.socket.handlers.GatewayServerHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
@@ -10,15 +11,15 @@ import io.netty.handler.codec.http.HttpResponseEncoder;
 
 /**
  * @author yu
- * @description 用于处理传入的HTTP请求
- * @date 2024-01-24
+ * @description 会话管道初始化类
+ * @date 2024-01-25
  */
-public class SessionChannelInitializer extends ChannelInitializer<SocketChannel> {
+public class GatewayChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-	private final Configuration configuration;
+	private final DefaultGatewaySessionFactory gatewaySessionFactory;
 
-	public SessionChannelInitializer(Configuration configuration) {
-		this.configuration = configuration;
+	public GatewayChannelInitializer(DefaultGatewaySessionFactory gatewaySessionFactory) {
+		this.gatewaySessionFactory = gatewaySessionFactory;
 	}
 
 	@Override
@@ -32,6 +33,6 @@ public class SessionChannelInitializer extends ChannelInitializer<SocketChannel>
 		//HttpObjectAggregator 用于处理除了 GET 请求外的 POST 请求时候的对象信息
 		line.addLast(new HttpObjectAggregator(1024 * 1024));
 		//用于拿到HTTP网络请求后，处理我们自己需要的业务逻辑
-		line.addLast(new SessionServerHandler(configuration));
+		line.addLast(new GatewayServerHandler(gatewaySessionFactory));
 	}
 }

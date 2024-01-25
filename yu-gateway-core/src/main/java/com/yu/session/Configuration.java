@@ -1,7 +1,8 @@
 package com.yu.session;
 
-import com.yu.bind.GenericReferenceRegistry;
 import com.yu.bind.IGenericReference;
+import com.yu.bind.MapperRegistry;
+import com.yu.mapper.HttpStatement;
 import org.apache.dubbo.config.ApplicationConfig;
 import org.apache.dubbo.config.ReferenceConfig;
 import org.apache.dubbo.config.RegistryConfig;
@@ -16,7 +17,10 @@ import java.util.Map;
  * @date 2024-01-24
  */
 public class Configuration {
-	private final GenericReferenceRegistry registry = new GenericReferenceRegistry(this);
+
+	private final MapperRegistry mapperRegistry = new MapperRegistry(this);
+
+	private final Map<String, HttpStatement> httpStatements = new HashMap<>();
 
 	/**
 	 * RPC 应用服务配置项 api-gateway-test
@@ -29,7 +33,7 @@ public class Configuration {
 	private final Map<String, RegistryConfig> registryConfigMap = new HashMap<>();
 
 	/**
-	 * RPC 泛化服务配置项 com.yu.gateway.rpc.IActivityBooth
+	 * RPC 泛化服务配置项 cn.bugstack.gateway.rpc.IActivityBooth
 	 */
 	private final Map<String, ReferenceConfig<GenericService>> referenceConfigMap = new HashMap<>();
 
@@ -65,11 +69,20 @@ public class Configuration {
 		return referenceConfigMap.get(interfaceName);
 	}
 
-	public void addGenericReference(String application, String interfaceName, String methodName) {
-		registry.addGenericReference(application, interfaceName, methodName);
+	public void addMapper(HttpStatement httpStatement) {
+		mapperRegistry.addMapper(httpStatement);
 	}
 
-	public IGenericReference getGenericReference(String methodName) {
-		return registry.getGenericReference(methodName);
+	public IGenericReference getMapper(String uri, GatewaySession gatewaySession) {
+		return mapperRegistry.getMapper(uri, gatewaySession);
 	}
+
+	public void addHttpStatement(HttpStatement httpStatement) {
+		httpStatements.put(httpStatement.getUri(), httpStatement);
+	}
+
+	public HttpStatement getHttpStatement(String uri) {
+		return httpStatements.get(uri);
+	}
+
 }

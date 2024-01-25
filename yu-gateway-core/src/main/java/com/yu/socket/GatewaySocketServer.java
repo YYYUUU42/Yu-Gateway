@@ -1,6 +1,8 @@
-package com.yu.session;
+package com.yu.socket;
 
+import com.yu.session.defaults.DefaultGatewaySessionFactory;
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
@@ -10,17 +12,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.nio.channels.Channel;
 import java.util.concurrent.Callable;
 
 /**
  * @author yu
- * @description 实现了Socket服务器的启动
- * @date 2024-01-24
+ * @description 网关会话服务
+ * @date 2024-01-25
  */
-public class SessionServer implements Callable<Channel> {
-
-	private final Logger logger = LoggerFactory.getLogger(SessionServer.class);
+public class GatewaySocketServer implements Callable<Channel> {
+	private final Logger logger = LoggerFactory.getLogger(GatewaySocketServer.class);
 
 	/**
 	 * 创建用于处理连接的 boss 线程组
@@ -39,10 +39,10 @@ public class SessionServer implements Callable<Channel> {
 	 */
 	private Channel channel;
 
-	private Configuration configuration;
+	private DefaultGatewaySessionFactory gatewaySessionFactory;
 
-	public SessionServer(Configuration configuration) {
-		this.configuration = configuration;
+	public GatewaySocketServer(DefaultGatewaySessionFactory gatewaySessionFactory) {
+		this.gatewaySessionFactory = gatewaySessionFactory;
 	}
 
 	/**
@@ -56,16 +56,14 @@ public class SessionServer implements Callable<Channel> {
 		//用于保存异步操作的结果
 		ChannelFuture channelFuture = null;
 		try {
-			ServerBootstrap serverBootstrap = new ServerBootstrap();
-			serverBootstrap.group(boss, work)
-					//指定使用NIO传输的 NioServerSocketChannel 类来接受新的连接
+			ServerBootstrap b = new ServerBootstrap();
+			b.group(boss, work)
 					.channel(NioServerSocketChannel.class)
-					//设置Socket的参数，其中 SO_BACKLOG 表示请求连接的最大队列长度
 					.option(ChannelOption.SO_BACKLOG, 128)
-					//指定 SessionChannelInitializer 用于处理新连接数据
-					.childHandler(new SessionChannelInitializer(configuration));
+					.childHandler(new GatewayChannelInitializer(gatewaySessionFactory));
 
-			channelFuture = serverBootstrap.bind(new InetSocketAddress(7397)).syncUninterruptibly();
+			channelFuture = b.bind(new InetSocketAddress(7397)).syncUninterruptibly();
+			this.channel = channelFuture.channel();
 		} catch (Exception e) {
 			logger.error("socket server start error.", e);
 		} finally {
